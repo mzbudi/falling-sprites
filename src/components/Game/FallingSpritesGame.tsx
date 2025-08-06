@@ -244,6 +244,10 @@ export default class FallingSpritesGame extends Phaser.Scene {
               // score minus effect
               const penalty = -1;
 
+              const wrongSound = this.sound.add("wrong-sound");
+              wrongSound.setVolume(0.2);
+              wrongSound.play();
+
               const pointText = this.add
                 .text(sprite.x, sprite.y, `${penalty}`, {
                   fontStyle: "bold",
