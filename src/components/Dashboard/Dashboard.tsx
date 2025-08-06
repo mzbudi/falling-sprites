@@ -4,6 +4,7 @@ import GameCanvas from "../Game/GameCanvas";
 import { Play } from "lucide-react";
 import SoundModal from "../modals/SoundModal";
 import { playBackgroundMusic } from "../Sound/sound";
+import ConnectWallet from "../ConnectWallet/ConnectWallet";
 
 export function Dashboard() {
   const [onGoing, setOnGoing] = useState(false);
@@ -91,6 +92,11 @@ export function Dashboard() {
       )}
 
       <div className="min-h-screen bg-gradient-to-b from-slate-900 to-black flex flex-col items-center justify-center text-white px-4">
+        
+        <div className="absolute top-4 right-4 z-50">
+          <ConnectWallet />
+        </div>
+
         <h1 className="text-4xl font-bold mb-8 text-center tracking-wide drop-shadow-lg">
           🎮 Falling Sprites ✨✨
         </h1>
