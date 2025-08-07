@@ -6,10 +6,12 @@ import SoundModal from "../modals/SoundModal";
 import { playBackgroundMusic } from "../Sound/sound";
 import ConnectWallet from "../ConnectWallet/ConnectWallet";
 import { GameLayout } from "../../layout/GameLayout";
+import HowToPlayModal from "../modals/HowToPlayModal";
 
 export function Dashboard() {
   const [onGoing, setOnGoing] = useState(false);
   const [gameKey, setGameKey] = useState(0);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
   const gameOver = useGameStore((state) => state.gameOver);
   const gameOverLoading = useGameStore((state) => state.gameOverLoading);
   const bgmState = useGameStore((state) => state.bgmState);
@@ -27,6 +29,10 @@ export function Dashboard() {
   const handlePlayAgain = () => {
     useGameStore.getState().setGameOver(false);
     setGameKey((prevKey) => prevKey + 1); // Update game key untuk memicu rerender
+  };
+
+  const handleHowToPlay = () => {
+    setShowHowToPlay(true);
   };
 
   if (onGoing) {
@@ -92,28 +98,46 @@ export function Dashboard() {
         />
       )}
 
+      {showHowToPlay && <HowToPlayModal onAccept={setShowHowToPlay} />}
+
       <div className="min-h-screen flex flex-col items-center justify-center text-white px-4">
         <div className="absolute top-4 right-4 z-50">
           <ConnectWallet />
         </div>
 
-        <h1 className="text-4xl font-bold mb-8 text-center tracking-wide drop-shadow-lg">
-          🎮 Falling Sprites ✨✨
+        <h1 className="text-9xl font-bold mb-8 text-center tracking-wide drop-shadow-lg italic">
+          Falling Sprites ✨
         </h1>
 
         <div className="flex gap-4 mb-6">
           <button
             onClick={handleStartGame}
             disabled={onGoing || gameOver}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition 
-              ${
-                onGoing || gameOver
-                  ? "bg-gray-600 cursor-not-allowed"
-                  : "bg-green-600 hover:bg-green-700"
-              }`}
+            style={{
+              backgroundColor: "#56FCCA",
+              color: "#000",
+            }}
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition italic text-4xl ${
+              onGoing || gameOver ? "cursor-not-allowed" : "hover:brightness-90"
+            }`}
           >
-            <Play size={20} />
-            Start Game
+            <Play size={20} className="fill-black transform -skew-x-12" />
+            START
+          </button>
+          <button
+            onClick={handleHowToPlay}
+            disabled={onGoing || gameOver}
+            style={{
+              fontFamily: '"Anton", sans-serif',
+              backgroundColor: "#56FCCA",
+              color: "#000",
+            }}
+            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition italic text-4xl ${
+              onGoing || gameOver ? "cursor-not-allowed" : "hover:brightness-90"
+            }`}
+          >
+            <Play size={20} className="fill-black transform -skew-x-12" />
+            HOW TO PLAY
           </button>
         </div>
       </div>
