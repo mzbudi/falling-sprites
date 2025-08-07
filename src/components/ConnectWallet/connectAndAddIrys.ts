@@ -1,4 +1,5 @@
-import { IRYS_TESTNET_PARAMS } from "../../constants.ts"; // file berisi data RPC di atas
+import { BrowserProvider } from "ethers";
+import { IRYS_TESTNET_PARAMS } from "../../constants.ts";
 import { useWalletStore } from "../../store/useWalletStore.ts";
 
 export async function connectWalletAndAddIrys() {
@@ -8,16 +9,15 @@ export async function connectWalletAndAddIrys() {
       return;
     }
 
-    const provider = window.ethereum;
+    const provider = new BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const network = await provider.getNetwork();
 
-    const accounts = (await provider.request({
-      method: "eth_requestAccounts",
-    })) as string[];
-    const currentChainId = await provider.request({ method: "eth_chainId" });
+    const currentChainId = `0x${network.chainId.toString(16)}`;
 
     if (currentChainId !== IRYS_TESTNET_PARAMS.chainId) {
       try {
-        await provider.request({
+        await window.ethereum.request({
           method: "wallet_addEthereumChain",
           params: [IRYS_TESTNET_PARAMS],
         });
@@ -31,9 +31,13 @@ export async function connectWalletAndAddIrys() {
 
     useWalletStore
       .getState()
-      .setWalletInfo(accounts[0], Number(currentChainId));
+      .setWalletInfo(
+        await signer.getAddress(),
+        signer,
+        Number(network.chainId)
+      );
 
-    return accounts[0];
+    return signer;
   } catch (err) {
     console.error("Error connecting wallet:", err);
   }

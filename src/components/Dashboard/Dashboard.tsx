@@ -7,6 +7,7 @@ import { playBackgroundMusic } from "../Sound/sound";
 import ConnectWallet from "../ConnectWallet/ConnectWallet";
 import { GameLayout } from "../../layout/GameLayout";
 import HowToPlayModal from "../modals/HowToPlayModal";
+import BestScore from "../BestScore/BestScore";
 
 export function Dashboard() {
   const [onGoing, setOnGoing] = useState(false);
@@ -103,6 +104,10 @@ export function Dashboard() {
       <div className="min-h-screen flex flex-col items-center justify-center text-white px-4">
         <div className="absolute top-4 right-4 z-50">
           <ConnectWallet />
+        </div>
+
+        <div className="absolute top-4 left-4 z-50">
+          <BestScore />
         </div>
 
         <h1 className="text-9xl font-bold mb-8 text-center tracking-wide drop-shadow-lg italic">
