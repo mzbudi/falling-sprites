@@ -6,6 +6,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
   private coins!: Phaser.Physics.Arcade.Group;
   private falling_sprites_1!: Phaser.Physics.Arcade.Group;
   private falling_sprites_2!: Phaser.Physics.Arcade.Group;
+  private falling_sprites_3!: Phaser.Physics.Arcade.Group;
   private score: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
   private timeLeft: number = 60;
@@ -15,6 +16,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
   private coinDelay: number = 1000;
   private sprite1Delay: number = 2000;
   private sprite2Delay: number = 500;
+  private sprite3Delay: number = 800;
   private hasIncreasedSpawn: boolean = false;
 
   constructor() {
@@ -27,9 +29,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
     this.load.image("catcher", "/assets/catcher_sprites.png");
     this.load.image("falling_sprites_1", "/assets/falling_sprites_1.png");
     this.load.image("falling_sprites_2", "/assets/falling_sprites_2.png");
-    this.load.image("bug", "/assets/bug.png");
-    this.load.image("hacker", "/assets/hacker.png");
-    this.load.image("virus", "/assets/virus.png");
+    this.load.image("falling_sprites_3", "/assets/falling_sprites_3.png");
     this.load.audio("collect-sound", "/audio/collect.mp3");
     this.load.audio("wrong-sound", "/audio/wrong.MP3");
   }
@@ -84,6 +84,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
     this.coins = this.physics.add.group();
     this.falling_sprites_1 = this.physics.add.group();
     this.falling_sprites_2 = this.physics.add.group();
+    this.falling_sprites_3 = this.physics.add.group();
 
     // Keyboard control
     const cursors = this.input.keyboard?.createCursorKeys();
@@ -125,6 +126,15 @@ export default class FallingSpritesGame extends Phaser.Scene {
       this.time.addEvent({
         delay: this.sprite2Delay,
         callback: this.createFallingSprite2,
+        callbackScope: this,
+        loop: true,
+      })
+    );
+
+    this.timers.push(
+      this.time.addEvent({
+        delay: this.sprite3Delay,
+        callback: this.createFallingSprite3,
         callbackScope: this,
         loop: true,
       })
@@ -182,6 +192,18 @@ export default class FallingSpritesGame extends Phaser.Scene {
       this
     );
 
+    this.physics.add.overlap(
+      this.catcher,
+      this.falling_sprites_3,
+      (catcher, falling_sprites_3) =>
+        this.catchFallingSprite2(
+          catcher as Phaser.Physics.Arcade.Sprite,
+          falling_sprites_3 as Phaser.Physics.Arcade.Sprite
+        ),
+      undefined,
+      this
+    );
+
     this.scoreText = this.add.text(16, 16, "Score: 0", {
       fontStyle: "bold",
       fontSize: "32px",
@@ -234,7 +256,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
       }
     }
 
-    [this.falling_sprites_2, this.coins, this.falling_sprites_1].forEach(
+    [this.falling_sprites_2, this.coins, this.falling_sprites_1, this.falling_sprites_3].forEach(
       (group) => {
         group.getChildren().forEach((item) => {
           if ((item as Phaser.Physics.Arcade.Sprite).y > window.innerHeight) {
@@ -242,7 +264,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
 
             if (sprite.texture.key !== "coin") {
               // score minus effect
-              const penalty = -1;
+              const penalty = -2;
 
               const wrongSound = this.sound.add("wrong-sound");
               wrongSound.setVolume(0.2);
@@ -303,6 +325,14 @@ export default class FallingSpritesGame extends Phaser.Scene {
           loop: true,
         })
       );
+      this.timers.push(
+        this.time.addEvent({
+          delay: this.sprite3Delay * 0.5,
+          callback: this.createFallingSprite3,
+          callbackScope: this,
+          loop: true,
+        })
+      );
     }
   }
 
@@ -338,6 +368,17 @@ export default class FallingSpritesGame extends Phaser.Scene {
     falling_sprites_2.setScale(0.2);
     const speed = 100 + (60 - this.timeLeft) * 10; // Kecepatan meningkat seiring waktu
     falling_sprites_2.setVelocityY(speed);
+  }
+
+  createFallingSprite3() {
+    const falling_sprites_3 = this.falling_sprites_3.create(
+      Phaser.Math.Between(100, Math.min(700, this.scale.width)),
+      0,
+      "falling_sprites_3"
+    ) as Phaser.Physics.Arcade.Sprite;
+    falling_sprites_3.setScale(0.3);
+    const speed = 100 + (60 - this.timeLeft) * 10; // Kecepatan meningkat seiring waktu
+    falling_sprites_3.setVelocityY(speed);
   }
 
   catchCoin(
@@ -382,8 +423,8 @@ export default class FallingSpritesGame extends Phaser.Scene {
     const collectSound = this.sound.add("collect-sound");
     collectSound.play();
 
-    // Tampilkan teks poin di posisi coin
-    const points = 10; // Poin yang didapatkan dari coin
+    // Sprite 1 Catcher
+    const points = 5; // Score gotten from sprite 1
     const pointText = this.add
       .text(falling_sprites_1.x, falling_sprites_1.y, `+${points}`, {
         fontStyle: "bold",
@@ -392,7 +433,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
       })
       .setOrigin(0.5);
 
-    // Animasi teks naik dan menghilang
+    // text faded
     this.tweens.add({
       targets: pointText,
       y: falling_sprites_1.y - 50, // Gerakkan ke atas
@@ -405,9 +446,9 @@ export default class FallingSpritesGame extends Phaser.Scene {
     });
 
     falling_sprites_1.destroy();
-    this.score += 10;
+    this.score += 5;
     this.scoreText.setText(`Score: ${this.score}`);
-    console.log("Chain caught!");
+    console.log("Sprite1 caught!");
   }
 
   catchFallingSprite2(
@@ -418,7 +459,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
     collectSound.play();
 
     // Tampilkan teks poin di posisi coin
-    const points = 3; // Poin yang didapatkan dari coin
+    const points = 4; // Poin yang didapatkan dari coin
     const pointText = this.add
       .text(falling_sprite_2.x, falling_sprite_2.y, `+${points}`, {
         fontStyle: "bold",
@@ -440,9 +481,44 @@ export default class FallingSpritesGame extends Phaser.Scene {
     });
 
     falling_sprite_2.destroy();
+    this.score += 4;
+    this.scoreText.setText(`Score: ${this.score}`);
+    console.log("Sprite2 caught!");
+  }
+
+  catchFallingSprite3(
+    _catcher: Phaser.Physics.Arcade.Sprite,
+    falling_sprite_3: Phaser.Physics.Arcade.Sprite
+  ) {
+    const collectSound = this.sound.add("collect-sound");
+    collectSound.play();
+
+    // Tampilkan teks poin di posisi coin
+    const points = 3; // Poin yang didapatkan dari coin
+    const pointText = this.add
+      .text(falling_sprite_3.x, falling_sprite_3.y, `+${points}`, {
+        fontStyle: "bold",
+        fontSize: "32px",
+        color: "#2bab00",
+      })
+      .setOrigin(0.5);
+
+    // Animasi teks naik dan menghilang
+    this.tweens.add({
+      targets: pointText,
+      y: falling_sprite_3.y - 50, // Gerakkan ke atas
+      alpha: 0, // Ubah transparansi menjadi 0
+      duration: 500, // Durasi animasi
+      ease: "Power1", // Jenis easing
+      onComplete: () => {
+        pointText.destroy(); // Hancurkan teks setelah animasi selesai
+      },
+    });
+
+    falling_sprite_3.destroy();
     this.score += 3;
     this.scoreText.setText(`Score: ${this.score}`);
-    console.log("Block caught!");
+    console.log("Sprite3 caught!");
   }
 
   private gameOver() {
@@ -455,6 +531,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
     this.coins.clear(true, true);
     this.falling_sprites_1.clear(true, true);
     this.falling_sprites_2.clear(true, true);
+    this.falling_sprites_3.clear(true, true);
 
     if (this.game.scale.gameSize.width < 800) {
       this.add.text(100, 250, "Game Over", {
@@ -492,6 +569,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
     this.coins.clear(true, true);
     this.falling_sprites_1.clear(true, true);
     this.falling_sprites_2.clear(true, true);
+    this.falling_sprites_3.clear(true, true);
 
     // Hancurkan objek teks jika masih ada
     this.scoreText?.destroy();

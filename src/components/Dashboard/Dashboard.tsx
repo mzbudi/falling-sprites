@@ -5,6 +5,7 @@ import { Play } from "lucide-react";
 import SoundModal from "../modals/SoundModal";
 import { playBackgroundMusic } from "../Sound/sound";
 import ConnectWallet from "../ConnectWallet/ConnectWallet";
+import { GameLayout } from "../../layout/GameLayout";
 
 export function Dashboard() {
   const [onGoing, setOnGoing] = useState(false);
@@ -30,7 +31,7 @@ export function Dashboard() {
 
   if (onGoing) {
     return (
-      <>
+      <GameLayout>
         <GameCanvas key={gameKey} />
 
         {gameOverLoading && (
@@ -77,12 +78,12 @@ export function Dashboard() {
             </button>
           </div>
         )}
-      </>
+      </GameLayout>
     );
   }
 
   return (
-    <>
+    <GameLayout>
       {!bgmState && (
         <SoundModal
           onAccept={() => {
@@ -91,8 +92,7 @@ export function Dashboard() {
         />
       )}
 
-      <div className="min-h-screen bg-gradient-to-b from-slate-900 to-black flex flex-col items-center justify-center text-white px-4">
-        
+      <div className="min-h-screen flex flex-col items-center justify-center text-white px-4">
         <div className="absolute top-4 right-4 z-50">
           <ConnectWallet />
         </div>
@@ -117,6 +117,6 @@ export function Dashboard() {
           </button>
         </div>
       </div>
-    </>
+    </GameLayout>
   );
 }

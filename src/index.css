@@ -1,1 +1,30 @@
 @import "tailwindcss";
+
+@keyframes fall {
+  0% {
+    top: -50px;
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+  100% {
+    top: 100%;
+    opacity: 0.5;
+    transform: rotate(360deg);
+  }
+}
+
+body {
+  @apply bg-gradient-to-b from-slate-900 to-black text-white;
+}
+
+.animate-fall {
+  animation-name: fall;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.falling-sprite {
+  position: absolute;
+  top: -50px;
+  pointer-events: none;
+}
