@@ -10,7 +10,9 @@ export async function connectWalletAndAddIrys() {
 
     const provider = window.ethereum;
 
-    const accounts = await provider.request({ method: "eth_requestAccounts" });
+    const accounts = (await provider.request({
+      method: "eth_requestAccounts",
+    })) as string[];
     const currentChainId = await provider.request({ method: "eth_chainId" });
 
     if (currentChainId !== IRYS_TESTNET_PARAMS.chainId) {
@@ -27,7 +29,9 @@ export async function connectWalletAndAddIrys() {
       console.log("Already on Irys Testnet");
     }
 
-    useWalletStore.getState().setWalletInfo(accounts[0], Number(currentChainId));
+    useWalletStore
+      .getState()
+      .setWalletInfo(accounts[0], Number(currentChainId));
 
     return accounts[0];
   } catch (err) {
