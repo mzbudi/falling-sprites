@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useWalletStore } from "../../store/useWalletStore";
-import { getScoreByWallet } from "../../lib/contract";
+import { getScoreByWallet } from "../../lib/scores";
 
 export default function BestScore() {
   const address = useWalletStore((state) => state.walletAddress);

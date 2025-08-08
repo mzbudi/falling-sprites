@@ -538,22 +538,26 @@ export default class FallingSpritesGame extends Phaser.Scene {
         fontStyle: "bold",
         fontSize: "48px",
         color: "#ff0000",
+        fontFamily: 'Anton, sans-serif',
       });
       this.add.text(100, 320, `Final Score: ${this.score}`, {
         fontStyle: "bold",
         fontSize: "32px",
         color: "#ff0000",
+        fontFamily: 'Anton, sans-serif',
       });
     } else {
       this.add.text(300, 250, "Game Over", {
         fontStyle: "bold",
         fontSize: "48px",
         color: "#ff0000",
+        fontFamily: 'Anton, sans-serif',
       });
       this.add.text(300, 320, `Final Score: ${this.score}`, {
         fontStyle: "bold",
         fontSize: "32px",
         color: "#ff0000",
+        fontFamily: 'Anton, sans-serif',
       });
     }
 

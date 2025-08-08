@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useGameStore } from "../../store/useGameStore";
-import GameCanvas from "../Game/GameCanvas";
 import { Play } from "lucide-react";
-import SoundModal from "../modals/SoundModal";
 import { playBackgroundMusic } from "../Sound/sound";
-import ConnectWallet from "../ConnectWallet/ConnectWallet";
 import { GameLayout } from "../../layout/GameLayout";
+import GameCanvas from "../Game/GameCanvas";
+import SoundModal from "../modals/SoundModal";
+import ConnectWallet from "../ConnectWallet/ConnectWallet";
 import HowToPlayModal from "../modals/HowToPlayModal";
 import BestScore from "../BestScore/BestScore";
+import Leaderboard from "../Leaderboard/Leaderboard";
 
 export function Dashboard() {
   const [onGoing, setOnGoing] = useState(false);
@@ -108,6 +109,7 @@ export function Dashboard() {
 
         <div className="absolute top-4 left-4 z-50">
           <BestScore />
+          <Leaderboard />
         </div>
 
         <h1 className="text-9xl font-bold mb-8 text-center tracking-wide drop-shadow-lg italic">

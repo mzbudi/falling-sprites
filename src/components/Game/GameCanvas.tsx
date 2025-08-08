@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import Phaser from "phaser";
 import FallingSpritesGame from "./FallingSpritesGame";
 import { useGameStore } from "../../store/useGameStore";
-import { submitScore } from "../../lib/contract";
+import { submitScore } from "../../lib/scores";
 
 const configPcCanvas: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,

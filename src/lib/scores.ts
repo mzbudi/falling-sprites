@@ -1,0 +1,41 @@
+import { JsonRpcProvider } from "ethers";
+import { useWalletStore } from "../store/useWalletStore";
+import { getLeaderboardContract } from "./contract";
+
+export async function submitScore(score: number) {
+  const { signer } = useWalletStore.getState();
+  if (!signer) {
+    throw new Error("Signer not available. Please connect wallet.");
+  }
+
+  const contract = getLeaderboardContract(signer);
+
+  try {
+    const tx = await contract.submitScore(score);
+    console.log("Submitting score tx:", tx.hash);
+    await tx.wait();
+    console.log("✅ Score submitted successfully!");
+  } catch (err) {
+    console.error("❌ Failed to submit score:", err);
+  }
+}
+
+export async function getScoreByWallet(address: string) {
+  const provider = new JsonRpcProvider(
+    "https://testnet-rpc.irys.xyz/v1/execution-rpc"
+  );
+  const contract = getLeaderboardContract(provider);
+
+  try {
+    const scoreEntry = await contract.getScore(address);
+    const score = scoreEntry[1];
+    const lastUpdated = scoreEntry[0];
+    return {
+      score: Number(score),
+      lastUpdated: new Date(Number(lastUpdated) * 1000).toLocaleString(),
+    };
+  } catch (err) {
+    console.error("Failed to get score for wallet:", err);
+    return null;
+  }
+}
