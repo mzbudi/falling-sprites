@@ -16,7 +16,7 @@ export async function submitScore(score: number) {
     await tx.wait();
     console.log("✅ Score submitted successfully!");
   } catch (err) {
-    console.error("❌ Failed to submit score:", err);
+    throw new Error("Failed to submit score: " + err.message);
   }
 }
 

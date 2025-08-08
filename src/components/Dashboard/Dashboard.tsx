@@ -1,24 +1,37 @@
 import { useState } from "react";
 import { useGameStore } from "../../store/useGameStore";
+import { useWalletStore } from "../../store/useWalletStore";
 import { Play } from "lucide-react";
 import { playBackgroundMusic } from "../Sound/sound";
 import { GameLayout } from "../../layout/GameLayout";
+import { submitScore } from "../../lib/scores";
+
 import GameCanvas from "../Game/GameCanvas";
 import SoundModal from "../modals/SoundModal";
 import ConnectWallet from "../ConnectWallet/ConnectWallet";
 import HowToPlayModal from "../modals/HowToPlayModal";
 import BestScore from "../BestScore/BestScore";
 import Leaderboard from "../Leaderboard/Leaderboard";
+import HighScoreNotPassedModal from "../modals/HighScoreNotPassedModal";
+import ForceConnectWalletModal from "../modals/ForceConnectWalletModal";
 
 export function Dashboard() {
   const [onGoing, setOnGoing] = useState(false);
   const [gameKey, setGameKey] = useState(0);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [highScoreNotPassedModal, setHighScoreNotPassedModal] = useState(false);
+  const [showForceConnectWalletModal, setShowForceConnectWalletModal] =
+    useState(false);
   const gameOver = useGameStore((state) => state.gameOver);
   const gameOverLoading = useGameStore((state) => state.gameOverLoading);
   const bgmState = useGameStore((state) => state.bgmState);
+  const walletAddress = useWalletStore((state) => state.walletAddress);
 
   const handleStartGame = () => {
+    if (!walletAddress) {
+      setShowForceConnectWalletModal(true);
+      return;
+    }
     setOnGoing(true);
     useGameStore.getState().setGameOver(false);
   };
@@ -35,12 +48,32 @@ export function Dashboard() {
 
   const handleHowToPlay = () => {
     setShowHowToPlay(true);
+    // setHighScoreNotPassedModal(true);
+  };
+
+  const handleSubmitScore = async () => {
+    const score = useGameStore.getState().gameScore;
+    if (score === null || score === undefined) {
+      console.error("No score to submit");
+      return;
+    }
+    try {
+      await submitScore(score);
+      console.log("✅ Score successfully submitted to contract");
+    } catch (err) {
+      setHighScoreNotPassedModal(true);
+      console.error("❌ Failed to submit score:", err);
+    }
   };
 
   if (onGoing) {
     return (
       <GameLayout>
         <GameCanvas key={gameKey} />
+
+        {highScoreNotPassedModal && (
+          <HighScoreNotPassedModal onAccept={setHighScoreNotPassedModal} />
+        )}
 
         {gameOverLoading && (
           <div className="absolute top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center space-x-4">
@@ -71,16 +104,26 @@ export function Dashboard() {
         )}
 
         {gameOver && (
-          <div className="absolute top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center space-x-4">
+          <div className="absolute top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center space-x-4">
             <button
-              className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl text-lg font-semibold"
               onClick={handlePlayAgain}
+              style={{
+                backgroundColor: "#56FCCA",
+                color: "#000",
+              }}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition italic text-4xl cursor-pointer hover:brightness-90`}
             >
               Play Again
             </button>
             <button
-              className="bg-gray-500 hover:bg-green-600 text-white px-6 py-2 rounded-xl text-lg font-semibold"
+              onClick={handleSubmitScore}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition italic text-4xl bg-orange-400 cursor-pointer hover:brightness-90`}
+            >
+              Submit Score
+            </button>
+            <button
               onClick={handleBackToMenu}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition italic text-4xl bg-gray-800 cursor-pointer hover:brightness-90`}
             >
               Back to Menu
             </button>
@@ -101,6 +144,9 @@ export function Dashboard() {
       )}
 
       {showHowToPlay && <HowToPlayModal onAccept={setShowHowToPlay} />}
+      {showForceConnectWalletModal && (
+        <ForceConnectWalletModal onAccept={setShowForceConnectWalletModal} />
+      )}
 
       <div className="min-h-screen flex flex-col items-center justify-center text-white px-4">
         <div className="absolute top-4 right-4 z-50">
@@ -109,7 +155,6 @@ export function Dashboard() {
 
         <div className="absolute top-4 left-4 z-50">
           <BestScore />
-          <Leaderboard />
         </div>
 
         <h1 className="text-9xl font-bold mb-8 text-center tracking-wide drop-shadow-lg italic">
@@ -147,6 +192,38 @@ export function Dashboard() {
             HOW TO PLAY
           </button>
         </div>
+      </div>
+
+      {/* Leaderboard Section */}
+      <div className="w-full max-w-3xl bg-gray-800 bg-opacity-80 p-6 rounded-lg shadow-lg mb-8 mx-auto mt-0">
+        <Leaderboard />
+      </div>
+
+      <div className="text-center text-gray-400 mt-4">
+        <p className="text-sm">
+          Made with ❤️ by{" "}
+          <a
+            href="https://x.com/MzBudi97"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 hover:underline"
+          >
+            MzBudi
+          </a>
+        </p>
+      </div>
+      <div className="text-center text-gray-400 mt-4">
+        <p className="text-sm">
+          Music by{" "}
+          <a
+            href="https://www.youtube.com/watch?v=vX1xq4Ud2z8"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 hover:underline"
+          >
+            HeatleyBros
+          </a>
+        </p>
       </div>
     </GameLayout>
   );

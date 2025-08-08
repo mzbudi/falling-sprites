@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import Phaser from "phaser";
 import FallingSpritesGame from "./FallingSpritesGame";
 import { useGameStore } from "../../store/useGameStore";
-import { submitScore } from "../../lib/scores";
 
 const configPcCanvas: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -49,13 +48,6 @@ export default function GameCanvas() {
       scene.events.on("gameover", async (payload: { score: number }) => {
         const { score } = payload;
         console.log("Game Over, Score: ", score);
-
-        try {
-          await submitScore(score);
-          console.log("✅ Score successfully submitted to contract");
-        } catch (err) {
-          console.error("❌ Failed to submit score:", err);
-        }
 
         useGameStore.getState().setGameOverLoading(false);
         useGameStore.getState().setGameScore(score);
