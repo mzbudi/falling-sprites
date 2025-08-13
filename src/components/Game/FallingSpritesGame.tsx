@@ -7,6 +7,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
   private falling_sprites_1!: Phaser.Physics.Arcade.Group;
   private falling_sprites_2!: Phaser.Physics.Arcade.Group;
   private falling_sprites_3!: Phaser.Physics.Arcade.Group;
+  private meteor!: Phaser.Physics.Arcade.Group;
   private score: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
   private timeLeft: number = 60;
@@ -17,6 +18,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
   private sprite1Delay: number = 2000;
   private sprite2Delay: number = 500;
   private sprite3Delay: number = 800;
+  private meteorDelay: number = 2500;
   private hasIncreasedSpawn: boolean = false;
 
   constructor() {
@@ -30,6 +32,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
     this.load.image("falling_sprites_1", "/assets/falling_sprites_1.png");
     this.load.image("falling_sprites_2", "/assets/falling_sprites_2.png");
     this.load.image("falling_sprites_3", "/assets/falling_sprites_3.png");
+    this.load.image("meteor", "/assets/meteor.png");
     this.load.audio("collect-sound", "/audio/collect.mp3");
     this.load.audio("wrong-sound", "/audio/wrong.MP3");
   }
@@ -85,6 +88,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
     this.falling_sprites_1 = this.physics.add.group();
     this.falling_sprites_2 = this.physics.add.group();
     this.falling_sprites_3 = this.physics.add.group();
+    this.meteor = this.physics.add.group();
 
     // Keyboard control
     const cursors = this.input.keyboard?.createCursorKeys();
@@ -135,6 +139,15 @@ export default class FallingSpritesGame extends Phaser.Scene {
       this.time.addEvent({
         delay: this.sprite3Delay,
         callback: this.createFallingSprite3,
+        callbackScope: this,
+        loop: true,
+      })
+    );
+
+    this.timers.push(
+      this.time.addEvent({
+        delay: this.meteorDelay,
+        callback: this.createMeteor,
         callbackScope: this,
         loop: true,
       })
@@ -204,6 +217,18 @@ export default class FallingSpritesGame extends Phaser.Scene {
       this
     );
 
+    this.physics.add.overlap(
+      this.catcher,
+      this.meteor,
+      (catcher, meteor) =>
+        this.catchMeteor(
+          catcher as Phaser.Physics.Arcade.Sprite,
+          meteor as Phaser.Physics.Arcade.Sprite
+        ),
+      undefined,
+      this
+    );
+
     this.scoreText = this.add.text(16, 16, "Score: 0", {
       fontStyle: "bold",
       fontSize: "32px",
@@ -256,46 +281,49 @@ export default class FallingSpritesGame extends Phaser.Scene {
       }
     }
 
-    [this.falling_sprites_2, this.coins, this.falling_sprites_1, this.falling_sprites_3].forEach(
-      (group) => {
-        group.getChildren().forEach((item) => {
-          if ((item as Phaser.Physics.Arcade.Sprite).y > window.innerHeight) {
-            const sprite = item as Phaser.Physics.Arcade.Sprite;
+    [
+      this.falling_sprites_2,
+      this.coins,
+      this.falling_sprites_1,
+      this.falling_sprites_3,
+    ].forEach((group) => {
+      group.getChildren().forEach((item) => {
+        if ((item as Phaser.Physics.Arcade.Sprite).y > window.innerHeight) {
+          const sprite = item as Phaser.Physics.Arcade.Sprite;
 
-            if (sprite.texture.key !== "coin") {
-              // score minus effect
-              const penalty = -2;
+          if (sprite.texture.key !== "coin") {
+            // score minus effect
+            const penalty = -2;
 
-              const wrongSound = this.sound.add("wrong-sound");
-              wrongSound.setVolume(0.2);
-              wrongSound.play();
+            const wrongSound = this.sound.add("wrong-sound");
+            wrongSound.setVolume(0.2);
+            wrongSound.play();
 
-              const pointText = this.add
-                .text(sprite.x, sprite.y, `${penalty}`, {
-                  fontStyle: "bold",
-                  fontSize: "32px",
-                  color: "#ff0000",
-                })
-                .setOrigin(0.5);
+            const pointText = this.add
+              .text(sprite.x, sprite.y, `${penalty}`, {
+                fontStyle: "bold",
+                fontSize: "32px",
+                color: "#ff0000",
+              })
+              .setOrigin(0.5);
 
-              this.tweens.add({
-                targets: pointText,
-                y: sprite.y - 50,
-                alpha: 0,
-                duration: 500,
-                ease: "Power1",
-                onComplete: () => pointText.destroy(),
-              });
+            this.tweens.add({
+              targets: pointText,
+              y: sprite.y - 50,
+              alpha: 0,
+              duration: 500,
+              ease: "Power1",
+              onComplete: () => pointText.destroy(),
+            });
 
-              this.score += penalty;
-              this.scoreText.setText(`Score: ${this.score}`);
-            }
-
-            sprite.destroy();
+            this.score += penalty;
+            this.scoreText.setText(`Score: ${this.score}`);
           }
-        });
-      }
-    );
+
+          sprite.destroy();
+        }
+      });
+    });
 
     if (this.timeLeft === 30 && !this.hasIncreasedSpawn) {
       this.hasIncreasedSpawn = true;
@@ -343,6 +371,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
       "falling_sprites_1"
     ) as Phaser.Physics.Arcade.Sprite;
     falling_sprites_1.setScale(0.2);
+    falling_sprites_1.setAngularVelocity(50);
     const speed = 100 + (60 - this.timeLeft) * 10; // Kecepatan meningkat seiring waktu
     falling_sprites_1.setVelocityY(speed);
   }
@@ -379,6 +408,20 @@ export default class FallingSpritesGame extends Phaser.Scene {
     falling_sprites_3.setScale(0.3);
     const speed = 100 + (60 - this.timeLeft) * 10; // Kecepatan meningkat seiring waktu
     falling_sprites_3.setVelocityY(speed);
+  }
+
+  createMeteor() {
+    const meteor = this.meteor.create(
+      Phaser.Math.Between(100, Math.min(700, this.scale.width)),
+      0,
+      "meteor"
+    ) as Phaser.Physics.Arcade.Sprite;
+    meteor.setScale(0.3);
+
+    const speedY = 100 + (60 - this.timeLeft) * 10;
+    const speedX = Phaser.Math.Between(-80, 80);
+
+    meteor.setVelocity(speedX, speedY);
   }
 
   catchCoin(
@@ -521,6 +564,40 @@ export default class FallingSpritesGame extends Phaser.Scene {
     console.log("Sprite3 caught!");
   }
 
+  catchMeteor(
+    _catcher: Phaser.Physics.Arcade.Sprite,
+    meteor: Phaser.Physics.Arcade.Sprite
+  ) {
+    const wrongSound = this.sound.add("wrong-sound");
+    wrongSound.setVolume(0.2);
+    wrongSound.play();
+
+    const points = -20;
+    const pointText = this.add
+      .text(meteor.x, meteor.y, `${points}`, {
+        fontStyle: "bold",
+        fontSize: "32px",
+        color: "#ff0000",
+      })
+      .setOrigin(0.5);
+
+    this.tweens.add({
+      targets: pointText,
+      y: meteor.y - 50,
+      alpha: 0,
+      duration: 500,
+      ease: "Power1",
+      onComplete: () => {
+        pointText.destroy();
+      },
+    });
+
+    meteor.destroy();
+    this.score += points;
+    this.scoreText.setText(`Score: ${this.score}`);
+    console.log("Meteor caught!");
+  }
+
   private gameOver() {
     this.physics.pause();
 
@@ -532,32 +609,33 @@ export default class FallingSpritesGame extends Phaser.Scene {
     this.falling_sprites_1.clear(true, true);
     this.falling_sprites_2.clear(true, true);
     this.falling_sprites_3.clear(true, true);
+    this.meteor.clear(true, true);
 
     if (this.game.scale.gameSize.width < 800) {
       this.add.text(100, 250, "Game Over", {
         fontStyle: "bold",
         fontSize: "48px",
         color: "#ff0000",
-        fontFamily: 'Anton, sans-serif',
+        fontFamily: "Anton, sans-serif",
       });
       this.add.text(100, 320, `Final Score: ${this.score}`, {
         fontStyle: "bold",
         fontSize: "32px",
         color: "#ff0000",
-        fontFamily: 'Anton, sans-serif',
+        fontFamily: "Anton, sans-serif",
       });
     } else {
       this.add.text(300, 250, "Game Over", {
         fontStyle: "bold",
         fontSize: "48px",
         color: "#ff0000",
-        fontFamily: 'Anton, sans-serif',
+        fontFamily: "Anton, sans-serif",
       });
       this.add.text(300, 320, `Final Score: ${this.score}`, {
         fontStyle: "bold",
         fontSize: "32px",
         color: "#ff0000",
-        fontFamily: 'Anton, sans-serif',
+        fontFamily: "Anton, sans-serif",
       });
     }
 

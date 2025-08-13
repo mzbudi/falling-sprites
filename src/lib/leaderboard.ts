@@ -13,7 +13,7 @@ export async function getAllScores() {
 
   const filter = contract.filters.ScoreSubmitted();
 
-  const events = await contract.queryFilter(filter, 0, "latest");
+  const events = await contract.queryFilter(filter, 0, 100000);
 
   const firstBlockInfo = await provider.getBlock(startBlock);
   const lastBlockInfo = await provider.getBlock(latestBlock);
