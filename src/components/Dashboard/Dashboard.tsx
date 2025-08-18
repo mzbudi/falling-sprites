@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useGameStore } from "../../store/useGameStore";
 import { useWalletStore } from "../../store/useWalletStore";
 import { Play } from "lucide-react";
@@ -26,6 +26,7 @@ export function Dashboard() {
   const gameOverLoading = useGameStore((state) => state.gameOverLoading);
   const bgmState = useGameStore((state) => state.bgmState);
   const walletAddress = useWalletStore((state) => state.walletAddress);
+  const leaderboardRef = useRef<HTMLDivElement | null>(null);
 
   const handleStartGame = () => {
     if (!walletAddress) {
@@ -49,6 +50,12 @@ export function Dashboard() {
   const handleHowToPlay = () => {
     setShowHowToPlay(true);
     // setHighScoreNotPassedModal(true);
+  };
+
+  const scrollToLeaderboard = () => {
+    if (leaderboardRef.current) {
+      leaderboardRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   const handleSubmitScore = async () => {
@@ -104,26 +111,31 @@ export function Dashboard() {
         )}
 
         {gameOver && (
-          <div className="absolute top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center space-x-4">
+          <div
+            className="absolute top-3/4 left-1/2 transform -translate-x-1/2 -translate-y-1/2 
+                flex flex-col sm:flex-row items-center justify-center gap-4 px-4"
+          >
             <button
               onClick={handlePlayAgain}
-              style={{
-                backgroundColor: "#56FCCA",
-                color: "#000",
-              }}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition italic text-4xl cursor-pointer hover:brightness-90`}
+              style={{ backgroundColor: "#56FCCA", color: "#000" }}
+              className={`flex items-center gap-2 px-3 py-2 sm:px-5 sm:py-3 rounded-xl font-bold transition italic 
+                 text-lg sm:text-2xl md:text-3xl cursor-pointer hover:brightness-90`}
             >
               Play Again
             </button>
+
             <button
               onClick={handleSubmitScore}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition italic text-4xl bg-orange-400 cursor-pointer hover:brightness-90`}
+              className={`flex items-center gap-2 px-3 py-2 sm:px-5 sm:py-3 rounded-xl font-bold transition italic 
+                 text-lg sm:text-2xl md:text-3xl bg-orange-400 cursor-pointer hover:brightness-90`}
             >
               Submit Score
             </button>
+
             <button
               onClick={handleBackToMenu}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition italic text-4xl bg-gray-800 cursor-pointer hover:brightness-90`}
+              className={`flex items-center gap-2 px-3 py-2 sm:px-5 sm:py-3 rounded-xl font-bold transition italic 
+                 text-lg sm:text-2xl md:text-3xl bg-gray-800 cursor-pointer hover:brightness-90`}
             >
               Back to Menu
             </button>
@@ -149,27 +161,34 @@ export function Dashboard() {
       )}
 
       <div className="min-h-screen flex flex-col items-center justify-center text-white px-4">
-        <div className="absolute top-4 right-4 z-50">
-          <ConnectWallet />
+        <div className="absolute top-4 left-0 right-0 px-4 z-50 flex flex-col items-center gap-2 sm:block">
+          {/* Mobile layout (flex-col) */}
+          <div className="flex flex-col items-center gap-2 sm:hidden">
+            <ConnectWallet />
+            <BestScore />
+          </div>
+
+          {/* Desktop layout (left-right) */}
+          <div className="hidden sm:flex justify-between items-center w-full">
+            <div className="flex justify-start">
+              <BestScore />
+            </div>
+            <div className="flex justify-end">
+              <ConnectWallet />
+            </div>
+          </div>
         </div>
 
-        <div className="absolute top-4 left-4 z-50">
-          <BestScore />
-        </div>
-
-        <h1 className="text-9xl font-bold mb-8 text-center tracking-wide drop-shadow-lg italic">
+        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-9xl font-bold mb-8 text-center tracking-wide drop-shadow-lg italic">
           Falling Sprites ✨
         </h1>
 
-        <div className="flex gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <button
             onClick={handleStartGame}
             disabled={onGoing || gameOver}
-            style={{
-              backgroundColor: "#56FCCA",
-              color: "#000",
-            }}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition italic text-4xl ${
+            style={{ backgroundColor: "#56FCCA", color: "#000" }}
+            className={`flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-xl font-bold transition italic text-2xl sm:text-3xl md:text-4xl ${
               onGoing || gameOver ? "cursor-not-allowed" : "hover:brightness-90"
             }`}
           >
@@ -179,23 +198,33 @@ export function Dashboard() {
           <button
             onClick={handleHowToPlay}
             disabled={onGoing || gameOver}
-            style={{
-              fontFamily: '"Anton", sans-serif',
-              backgroundColor: "#56FCCA",
-              color: "#000",
-            }}
-            className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold transition italic text-4xl ${
+            style={{ color: "#000" }}
+            className={`bg-blue-400 flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-xl font-bold transition italic text-2xl sm:text-3xl md:text-4xl ${
               onGoing || gameOver ? "cursor-not-allowed" : "hover:brightness-90"
             }`}
           >
             <Play size={20} className="fill-black transform -skew-x-12" />
             HOW TO PLAY
           </button>
+          <button
+            onClick={scrollToLeaderboard}
+            disabled={onGoing || gameOver}
+            style={{ color: "#000" }}
+            className={`bg-orange-400 flex items-center gap-2 px-4 py-2 sm:px-6 sm:py-3 rounded-xl font-bold transition italic text-2xl sm:text-3xl md:text-4xl ${
+              onGoing || gameOver ? "cursor-not-allowed" : "hover:brightness-90"
+            }`}
+          >
+            <Play size={20} className="fill-black transform -skew-x-12" />
+            LEADERBOARD
+          </button>
         </div>
       </div>
 
       {/* Leaderboard Section */}
-      <div className="w-full max-w-3xl bg-gray-800 bg-opacity-80 p-6 rounded-lg shadow-lg mb-8 mx-auto mt-0">
+      <div
+        className="w-full max-w-3xl bg-gray-800 bg-opacity-80 p-6 rounded-lg shadow-lg mb-8 mx-auto mt-0"
+        ref={leaderboardRef}
+      >
         <Leaderboard />
       </div>
 
@@ -224,6 +253,10 @@ export function Dashboard() {
             HeatleyBros
           </a>
         </p>
+      </div>
+      <div className="mt-2 flex items-center justify-center gap-2 text-gray-400 text-xs sm:text-sm pb-4">
+        <p className="text-sm">Powered by</p>
+        <img src="/assets/logo1.gif" alt="Irys Logo" className="h-7" />
       </div>
     </GameLayout>
   );
