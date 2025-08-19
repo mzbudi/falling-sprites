@@ -80,7 +80,13 @@ export default class FallingSpritesGame extends Phaser.Scene {
       "catcher"
     );
 
-    this.catcher.setScale(0.3);
+    // create condition to check if it's mobile or not
+    if (this.scale.gameSize.width < 800) {
+      this.catcher.setScale(0.2);
+    } else {
+      this.catcher.setScale(0.3);
+    }
+
     this.catcher.setCollideWorldBounds(true); // Biar tidak keluar layar
     this.catcher.setImmovable(true);
 
@@ -370,9 +376,16 @@ export default class FallingSpritesGame extends Phaser.Scene {
       0,
       "falling_sprites_1"
     ) as Phaser.Physics.Arcade.Sprite;
-    falling_sprites_1.setScale(0.2);
+
+    // create condition to check if it's mobile or not
+    if (this.scale.gameSize.width < 800) {
+      falling_sprites_1.setScale(0.15);
+    } else {
+      falling_sprites_1.setScale(0.2);
+    }
+
     falling_sprites_1.setAngularVelocity(50);
-    const speed = 100 + (60 - this.timeLeft) * 10; // Kecepatan meningkat seiring waktu
+    const speed = 100 + (60 - this.timeLeft) * 10; // Increase speed as time decreases
     falling_sprites_1.setVelocityY(speed);
   }
 
@@ -383,7 +396,13 @@ export default class FallingSpritesGame extends Phaser.Scene {
       "coin"
     ) as Phaser.Physics.Arcade.Sprite;
 
-    coin.setScale(0.1);
+    // create condition to check if it's mobile or not
+    if (this.scale.gameSize.width < 800) {
+      coin.setScale(0.08);
+    } else {
+      coin.setScale(0.1);
+    }
+    coin.setAngularVelocity(50);
     const speed = 100 + (60 - this.timeLeft) * 10; // Kecepatan meningkat seiring waktu
     coin.setVelocityY(speed);
   }
@@ -394,7 +413,14 @@ export default class FallingSpritesGame extends Phaser.Scene {
       0,
       "falling_sprites_2"
     ) as Phaser.Physics.Arcade.Sprite;
-    falling_sprites_2.setScale(0.2);
+
+    // create condition to check if it's mobile or not
+    if (this.scale.gameSize.width < 800) {
+      falling_sprites_2.setScale(0.15);
+    } else {
+      falling_sprites_2.setScale(0.2);
+    }
+
     const speed = 100 + (60 - this.timeLeft) * 10; // Kecepatan meningkat seiring waktu
     falling_sprites_2.setVelocityY(speed);
   }
@@ -405,7 +431,14 @@ export default class FallingSpritesGame extends Phaser.Scene {
       0,
       "falling_sprites_3"
     ) as Phaser.Physics.Arcade.Sprite;
-    falling_sprites_3.setScale(0.3);
+
+    // create condition to check if it's mobile or not
+    if (this.scale.gameSize.width < 800) {
+      falling_sprites_3.setScale(0.25);
+    } else {
+      falling_sprites_3.setScale(0.3);
+    }
+
     const speed = 100 + (60 - this.timeLeft) * 10; // Kecepatan meningkat seiring waktu
     falling_sprites_3.setVelocityY(speed);
   }
@@ -416,7 +449,13 @@ export default class FallingSpritesGame extends Phaser.Scene {
       0,
       "meteor"
     ) as Phaser.Physics.Arcade.Sprite;
-    meteor.setScale(0.3);
+
+    // create condition to check if it's mobile or not
+    if (this.scale.gameSize.width < 800) {
+      meteor.setScale(0.2);
+    } else {
+      meteor.setScale(0.3);
+    }
 
     const speedY = 100 + (60 - this.timeLeft) * 10;
     const speedX = Phaser.Math.Between(-80, 80);
@@ -611,33 +650,56 @@ export default class FallingSpritesGame extends Phaser.Scene {
     this.falling_sprites_3.clear(true, true);
     this.meteor.clear(true, true);
 
-    if (this.game.scale.gameSize.width < 800) {
-      this.add.text(100, 250, "Game Over", {
+    // if (this.game.scale.gameSize.width < 800) {
+    //   this.add.text(100, 250, "Game Over", {
+    //     fontStyle: "bold",
+    //     fontSize: "48px",
+    //     color: "#ff0000",
+    //     fontFamily: "Anton, sans-serif",
+    //   });
+    //   this.add.text(100, 320, `Final Score: ${this.score}`, {
+    //     fontStyle: "bold",
+    //     fontSize: "32px",
+    //     color: "#ff0000",
+    //     fontFamily: "Anton, sans-serif",
+    //   });
+    // } else {
+    //   this.add.text(300, 250, "Game Over", {
+    //     fontStyle: "bold",
+    //     fontSize: "48px",
+    //     color: "#ff0000",
+    //     fontFamily: "Anton, sans-serif",
+    //   });
+    //   this.add.text(300, 320, `Final Score: ${this.score}`, {
+    //     fontStyle: "bold",
+    //     fontSize: "32px",
+    //     color: "#ff0000",
+    //     fontFamily: "Anton, sans-serif",
+    //   });
+    // }
+
+    const centerX = this.scale.width / 2;
+    const centerY = this.scale.height / 2;
+
+    // Teks Game Over
+    this.add
+      .text(centerX, centerY - 50, "Game Over", {
         fontStyle: "bold",
         fontSize: "48px",
         color: "#ff0000",
         fontFamily: "Anton, sans-serif",
-      });
-      this.add.text(100, 320, `Final Score: ${this.score}`, {
+      })
+      .setOrigin(0.5); // biar titik anchor di tengah
+
+    // Teks Final Score
+    this.add
+      .text(centerX, centerY + 20, `Final Score: ${this.score}`, {
         fontStyle: "bold",
         fontSize: "32px",
         color: "#ff0000",
         fontFamily: "Anton, sans-serif",
-      });
-    } else {
-      this.add.text(300, 250, "Game Over", {
-        fontStyle: "bold",
-        fontSize: "48px",
-        color: "#ff0000",
-        fontFamily: "Anton, sans-serif",
-      });
-      this.add.text(300, 320, `Final Score: ${this.score}`, {
-        fontStyle: "bold",
-        fontSize: "32px",
-        color: "#ff0000",
-        fontFamily: "Anton, sans-serif",
-      });
-    }
+      })
+      .setOrigin(0.5);
 
     this.events.emit("gameover", { score: this.score });
   }

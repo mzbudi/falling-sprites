@@ -30,7 +30,7 @@ const configMobileCanvas: Phaser.Types.Core.GameConfig = {
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    width: Math.min(window.innerWidth, 800),
+    width: window.innerWidth,
     height: window.innerHeight,
   },
 };

@@ -164,7 +164,7 @@ export function Dashboard() {
         <div className="absolute top-4 left-0 right-0 px-4 z-50 flex flex-col items-center gap-2 sm:block">
           {/* Mobile layout (flex-col) */}
           <div className="flex flex-col items-center gap-2 sm:hidden">
-            <ConnectWallet />
+            {bgmState && <ConnectWallet />}
             <BestScore />
           </div>
 
@@ -174,7 +174,7 @@ export function Dashboard() {
               <BestScore />
             </div>
             <div className="flex justify-end">
-              <ConnectWallet />
+              {bgmState && <ConnectWallet />}
             </div>
           </div>
         </div>
@@ -218,6 +218,11 @@ export function Dashboard() {
             LEADERBOARD
           </button>
         </div>
+
+        <div className="mt-2 flex items-center justify-center gap-2 text-gray-400 text-xs sm:text-sm pb-4">
+          <p className="sm:text-sm md: text-sm lg:text-lg">Powered by</p>
+          <img src="/assets/logo1.gif" alt="Irys Logo" className="h-7" />
+        </div>
       </div>
 
       {/* Leaderboard Section */}
@@ -254,10 +259,10 @@ export function Dashboard() {
           </a>
         </p>
       </div>
-      <div className="mt-2 flex items-center justify-center gap-2 text-gray-400 text-xs sm:text-sm pb-4">
+      {/* <div className="mt-2 flex items-center justify-center gap-2 text-gray-400 text-xs sm:text-sm pb-4">
         <p className="text-sm">Powered by</p>
         <img src="/assets/logo1.gif" alt="Irys Logo" className="h-7" />
-      </div>
+      </div> */}
     </GameLayout>
   );
 }
