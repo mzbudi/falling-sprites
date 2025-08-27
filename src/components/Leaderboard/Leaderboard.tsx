@@ -13,12 +13,17 @@ export default function Leaderboard() {
     console.log(useWalletStore.getState(), " leaderboard wallet store");
 
     const fetchLeaderboard = async () => {
-      if (!address) return;
+      if (!address) {
+        console.log("No address, skipping leaderboard fetch");
+      }
 
       try {
         if (walletProvider === "world") {
+          console.log("Using relayer fetch...");
           const leaderboardData: Leaderboard_Data[] =
             await getAllScoresWithRelayer();
+          console.log("Relayer response:", leaderboardData);
+
           if (leaderboardData) {
             console.log(
               "Leaderboard data fetched with relayer:",
@@ -28,6 +33,7 @@ export default function Leaderboard() {
           setLeaderboard(leaderboardData);
           return;
         }
+        console.log("Using normal fetch...");
         const leaderboardData: Leaderboard_Data[] = await getAllScores();
         if (leaderboardData) {
           console.log("Leaderboard data fetched:", leaderboardData);
