@@ -108,6 +108,10 @@ export default class FallingSpritesGame extends Phaser.Scene {
     const width = Number(this.game.config.width);
 
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
+      // reset dulu
+      this.inputState.left = false;
+      this.inputState.right = false;
+
       if (pointer.x < width / 2) {
         this.inputState.left = true;
       } else {
@@ -123,6 +127,19 @@ export default class FallingSpritesGame extends Phaser.Scene {
     this.input.on("pointerout", () => {
       this.inputState.left = false;
       this.inputState.right = false;
+    });
+
+    this.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
+      if (!pointer.isDown) return;
+
+      this.inputState.left = false;
+      this.inputState.right = false;
+
+      if (pointer.x < width / 2) {
+        this.inputState.left = true;
+      } else {
+        this.inputState.right = true;
+      }
     });
 
     this.timers.push(
