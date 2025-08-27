@@ -19,6 +19,7 @@ const walletAuthInput = (nonce: string): WalletAuthInput => {
 
 export const WorldConnect = () => {
   const [user, setUser] = useState<MiniKitUser | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleWalletAuth = async () => {
     if (!MiniKit.isInstalled()) {
@@ -27,6 +28,8 @@ export const WorldConnect = () => {
       );
       return;
     }
+
+    setIsLoading(true);
 
     const res = await fetch(
       `${import.meta.env.VITE_BASE_URL}/api/minikit/nonce`
@@ -67,6 +70,7 @@ export const WorldConnect = () => {
         setUser(MiniKit.user);
       }
     }
+    setIsLoading(false);
   };
 
   const handleSignOut = useCallback(() => {
@@ -78,9 +82,15 @@ export const WorldConnect = () => {
       {!user ? (
         <button
           onClick={handleWalletAuth}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 disabled:opacity-70"
         >
-          Connect World App
+          {isLoading ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            </>
+          ) : (
+            "Connect World App"
+          )}
         </button>
       ) : (
         <button onClick={handleSignOut}>Sign Out</button>
