@@ -43,7 +43,7 @@ export async function getScoreByWallet(address: string) {
 
 export async function getScoreByWalletWithRelayer(address: string) {
   const response = await fetch(
-    `${import.meta.env.VITE_BASE_URL}/api/leaderboard/score/${address}`
+    `${import.meta.env.VITE_BASE_URL}/api/score/${address}`
   );
   console.log(response, "this is response");
 
