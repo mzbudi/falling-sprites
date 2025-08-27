@@ -10,6 +10,8 @@ export default function Leaderboard() {
   const walletProvider = useWalletStore((state) => state.provider);
 
   useEffect(() => {
+    console.log(useWalletStore.getState(), " leaderboard wallet store");
+
     const fetchLeaderboard = async () => {
       if (!address) return;
 

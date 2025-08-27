@@ -62,6 +62,8 @@ export const WorldConnect = () => {
           .getState()
           .setWalletInfo(finalPayload.address, null, null, "world");
 
+        console.log(useWalletStore.getState());
+
         setUser(MiniKit.user);
       }
     }
