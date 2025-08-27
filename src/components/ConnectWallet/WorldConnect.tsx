@@ -3,7 +3,7 @@ import {
   type WalletAuthInput,
   type User as MiniKitUser,
 } from "@worldcoin/minikit-js";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useWalletStore } from "../../store/useWalletStore";
 
 const walletAuthInput = (nonce: string): WalletAuthInput => {
@@ -41,6 +41,7 @@ export const WorldConnect = () => {
     );
 
     if (finalPayload.status === "error") {
+      setIsLoading(false);
       return;
     } else {
       const response = await fetch(
@@ -59,13 +60,10 @@ export const WorldConnect = () => {
 
       if (response.status === 200) {
         console.log("✅ Successfully signed in with World ID");
-        console.log(finalPayload);
 
         useWalletStore
           .getState()
           .setWalletInfo(finalPayload.address, null, null, "world");
-
-        console.log(useWalletStore.getState());
 
         setUser(MiniKit.user);
       }
@@ -77,6 +75,13 @@ export const WorldConnect = () => {
     setUser(null);
   }, []);
 
+  // ✅ Pop-up login otomatis saat pertama kali buka
+  useEffect(() => {
+    if (!user) {
+      handleWalletAuth();
+    }
+  }, [user]);
+
   return (
     <div className="flex flex-col items-center">
       {!user ? (
@@ -85,9 +90,7 @@ export const WorldConnect = () => {
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center justify-center gap-2 disabled:opacity-70"
         >
           {isLoading ? (
-            <>
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-            </>
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           ) : (
             "Connect World App"
           )}
