@@ -87,9 +87,6 @@ export const WorldConnect = () => {
   }, []);
 
   useEffect(() => {
-    // Run once on mount only.
-    // But: saat app pertama render, zustand persist mungkin belum rehydrated,
-    // jadi kita cek localStorage dulu untuk melihat apakah ada persisted wallet.
     if (typeof window === "undefined") return;
 
     const persisted = localStorage.getItem(PERSIST_KEY);
@@ -97,7 +94,6 @@ export const WorldConnect = () => {
 
     if (persisted) {
       try {
-        // Zustand persist biasanya menyimpan { state: { ... } } or { ... }
         const parsed = JSON.parse(persisted);
         persistedAddress =
           parsed?.state?.walletAddress ?? parsed?.walletAddress ?? null;
@@ -106,21 +102,25 @@ export const WorldConnect = () => {
       }
     }
 
-    // Jika tidak ada persisted address dan store juga belum punya walletAddress,
-    // maka tampilkan popup otomatis sekali saat buka tab.
-    if (!persistedAddress && !walletAddress) {
-      // panggil auth popup
+    // kalau persistedAddress = "world-app-user" anggap saja null
+    const isNotLoggedIn =
+      !persistedAddress ||
+      persistedAddress === "world-app-user" ||
+      !walletAddress ||
+      walletAddress === "world-app-user";
+
+    if (isNotLoggedIn) {
       handleWalletAuth();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // kosong -> hanya sekali di mount
+  }, []);
 
   const shortAddr = (a?: string | null) =>
     a ? `${a.slice(0, 6)}...${a.slice(-4)}` : "";
 
   return (
     <div className="flex flex-col items-center">
-      {!walletAddress ? (
+      {!walletAddress || walletAddress === 'world-app-user' ? (
         <button
           onClick={handleWalletAuth}
           disabled={isLoading}
