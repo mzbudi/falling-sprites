@@ -5,10 +5,12 @@ interface WalletState {
   walletAddress: string | null;
   chainId: number | null;
   signer: Signer | null;
+  provider: "world" | "metamask" | null;
   setWalletInfo: (
     welletAddress: string,
-    signer: Signer,
-    chainId: number
+    signer: Signer | null,
+    chainId: number | null,
+    provider: "world" | "metamask" | null
   ) => void;
   resetWallet: () => void;
 }
@@ -17,8 +19,9 @@ export const useWalletStore = create<WalletState>((set) => ({
   walletAddress: null,
   chainId: null,
   signer: null,
-  setWalletInfo: (walletAddress, signer, chainId) => {
-    set({ signer, walletAddress, chainId });
+  provider: null,
+  setWalletInfo: (walletAddress, signer, chainId, provider) => {
+    set({ signer, walletAddress, chainId, provider });
   },
   resetWallet: () => set({ walletAddress: null, chainId: null, signer: null }),
 }));

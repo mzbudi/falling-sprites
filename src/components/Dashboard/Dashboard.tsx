@@ -14,6 +14,7 @@ import BestScore from "../BestScore/BestScore";
 import Leaderboard from "../Leaderboard/Leaderboard";
 import HighScoreNotPassedModal from "../modals/HighScoreNotPassedModal";
 import ForceConnectWalletModal from "../modals/ForceConnectWalletModal";
+import { WorldConnect } from "../WorldConnect/WorldConnect";
 
 export function Dashboard() {
   const [onGoing, setOnGoing] = useState(false);
@@ -164,7 +165,7 @@ export function Dashboard() {
         <div className="absolute top-4 left-0 right-0 px-4 z-50 flex flex-col items-center gap-2 sm:block">
           {/* Mobile layout (flex-col) */}
           <div className="flex flex-col items-center gap-2 sm:hidden">
-            {bgmState && <ConnectWallet />}
+            {bgmState && <WorldConnect />}
             <BestScore />
           </div>
 
