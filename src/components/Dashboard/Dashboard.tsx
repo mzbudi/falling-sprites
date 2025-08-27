@@ -23,6 +23,7 @@ export function Dashboard() {
   const [highScoreNotPassedModal, setHighScoreNotPassedModal] = useState(false);
   const [showForceConnectWalletModal, setShowForceConnectWalletModal] =
     useState(false);
+  const [submitScoreLoading, setSubmitScoreLoading] = useState(false);
   const gameOver = useGameStore((state) => state.gameOver);
   const gameOverLoading = useGameStore((state) => state.gameOverLoading);
   const bgmState = useGameStore((state) => state.bgmState);
@@ -67,6 +68,8 @@ export function Dashboard() {
       return;
     }
 
+    setSubmitScoreLoading(true);
+
     if (walletProvider === "world") {
       try {
         await submitScoreWithRelayer(walletAddress!, score);
@@ -82,6 +85,7 @@ export function Dashboard() {
         console.error("❌ Failed to submit score:", err);
       }
     }
+    setSubmitScoreLoading(false);
   };
 
   if (onGoing) {
@@ -137,10 +141,20 @@ export function Dashboard() {
 
             <button
               onClick={handleSubmitScore}
-              className={`flex items-center gap-2 px-3 py-2 sm:px-5 sm:py-3 rounded-xl font-bold transition italic 
+              className={`${
+                submitScoreLoading
+                  ? "opacity-70 cursor-not-allowed"
+                  : "hover:brightness-90"
+              } flex items-center gap-2 px-3 py-2 sm:px-5 sm:py-3 rounded-xl font-bold transition italic 
                  text-lg sm:text-2xl md:text-3xl bg-orange-400 cursor-pointer hover:brightness-90`}
             >
-              Submit Score
+              {submitScoreLoading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                </>
+              ) : (
+                "Submit Score"
+              )}
             </button>
 
             <button

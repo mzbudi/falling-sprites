@@ -53,7 +53,7 @@ export async function getScoreByWalletWithRelayer(address: string) {
   const data = await response.json();
   const responseData = {
     score: data.score,
-    lastUpdated: new Date(Number(data.lastUpdated) * 1000).toLocaleString(),
+    lastUpdated: new Date(data.lastUpdated).toLocaleString(),
   };
   return responseData;
 }
