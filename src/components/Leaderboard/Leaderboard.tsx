@@ -37,7 +37,7 @@ export default function Leaderboard() {
     };
 
     fetchLeaderboard();
-  }, [address]);
+  }, [address, walletProvider]);
 
   return (
     <div style={{ padding: "1rem" }}>
