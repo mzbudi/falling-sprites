@@ -45,6 +45,8 @@ export async function getScoreByWalletWithRelayer(address: string) {
   const response = await fetch(
     `${import.meta.env.VITE_BASE_URL}/api/leaderboard/score/${address}`
   );
+  console.log(response, "this is response");
+
   if (!response.ok) {
     throw new Error("Failed to fetch score from relayer");
   }
@@ -52,6 +54,6 @@ export async function getScoreByWalletWithRelayer(address: string) {
   const responseData = {
     score: data.score,
     lastUpdated: new Date(data.lastUpdated).toLocaleString(),
-  }
+  };
   return responseData;
 }
