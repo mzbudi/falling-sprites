@@ -1,5 +1,6 @@
 import type { Signer } from "ethers";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface WalletState {
   walletAddress: string | null;
@@ -15,13 +16,23 @@ interface WalletState {
   resetWallet: () => void;
 }
 
-export const useWalletStore = create<WalletState>((set) => ({
-  walletAddress: null,
-  chainId: null,
-  signer: null,
-  provider: null,
-  setWalletInfo: (walletAddress, signer, chainId, provider) => {
-    set({ signer, walletAddress, chainId, provider });
-  },
-  resetWallet: () => set({ walletAddress: null, chainId: null, signer: null }),
-}));
+export const useWalletStore = create<WalletState>()(
+  persist(
+    (set) => ({
+      walletAddress: null,
+      chainId: null,
+      signer: null,
+      provider: null,
+      setWalletInfo: (walletAddress, signer, chainId, provider) =>
+        set({ signer, walletAddress, chainId, provider }),
+      resetWallet: () =>
+        set({
+          walletAddress: null,
+          chainId: null,
+          signer: null,
+          provider: null,
+        }),
+    }),
+    { name: "wallet-storage" }
+  )
+);
