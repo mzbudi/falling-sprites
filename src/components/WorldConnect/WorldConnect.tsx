@@ -27,7 +27,9 @@ export const WorldConnect = () => {
       return;
     }
 
-    const res = await fetch(`/api/nonce`);
+    const res = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/api/minikit/nonce`
+    );
     const { nonce } = await res.json();
 
     const { finalPayload } = await MiniKit.commandsAsync.walletAuth(
@@ -37,18 +39,24 @@ export const WorldConnect = () => {
     if (finalPayload.status === "error") {
       return;
     } else {
-      const response = await fetch("/api/complete-siwe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          payload: finalPayload,
-          nonce,
-        }),
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/api/minikit/complete-siwe`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            payload: finalPayload,
+            nonce,
+          }),
+        }
+      );
 
       if (response.status === 200) {
+        console.log("✅ Successfully signed in with World ID");
+        console.log(finalPayload);
+
         setUser(MiniKit.user);
       }
     }
