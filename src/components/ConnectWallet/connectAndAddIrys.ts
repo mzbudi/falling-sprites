@@ -1,6 +1,6 @@
 import { BrowserProvider } from "ethers";
 import { IRYS_TESTNET_PARAMS } from "../../constants.ts";
-// import { useWalletStore } from "../../store/useWalletStore.ts";
+import { useWalletStore } from "../../store/useWalletStore.ts";
 
 export async function connectWalletAndAddIrys() {
   try {
@@ -29,13 +29,14 @@ export async function connectWalletAndAddIrys() {
       console.log("Already on Irys Testnet");
     }
 
-    // useWalletStore
-    //   .getState()
-    //   .setWalletInfo(
-    //     await signer.getAddress(),
-    //     signer,
-    //     Number(network.chainId)
-    //   );
+    useWalletStore
+      .getState()
+      .setWalletInfo(
+        await signer.getAddress(),
+        signer,
+        Number(network.chainId),
+        "metamask"
+      );
 
     return signer;
   } catch (err) {

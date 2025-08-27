@@ -27,6 +27,7 @@ export function Dashboard() {
   const gameOverLoading = useGameStore((state) => state.gameOverLoading);
   const bgmState = useGameStore((state) => state.bgmState);
   const walletAddress = useWalletStore((state) => state.walletAddress);
+  const walletProvider = useWalletStore((state) => state.provider);
   const leaderboardRef = useRef<HTMLDivElement | null>(null);
 
   const handleStartGame = () => {
@@ -165,7 +166,11 @@ export function Dashboard() {
         <div className="absolute top-4 left-0 right-0 px-4 z-50 flex flex-col items-center gap-2 sm:block">
           {/* Mobile layout (flex-col) */}
           <div className="flex flex-col items-center gap-2 sm:hidden">
-            {bgmState && <WorldConnect />}
+            {/* if provider wallet connect render worldconnect, else render wallet connect */}
+
+            {walletProvider === "world"
+              ? bgmState && <WorldConnect />
+              : bgmState && <ConnectWallet />}
             <BestScore />
           </div>
 

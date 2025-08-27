@@ -53,3 +53,14 @@ export async function getAllScores() {
 
   return leaderboard;
 }
+
+export async function getAllScoresWithRelayer() {
+  const response = await fetch(
+    `${import.meta.env.VITE_BASE_URL}/api/leaderboard/scores`
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch leaderboard from relayer");
+  }
+  const data = await response.json();
+  return data.leaderboard;
+}
