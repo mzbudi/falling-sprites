@@ -13,6 +13,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
   private timeLeft: number = 60;
   private timerText!: Phaser.GameObjects.Text;
   private timers: Phaser.Time.TimerEvent[] = [];
+  private inputState = { left: false, right: false };
 
   private coinDelay: number = 1000;
   private sprite1Delay: number = 2000;
@@ -98,20 +99,30 @@ export default class FallingSpritesGame extends Phaser.Scene {
 
     // Keyboard control
     const cursors = this.input.keyboard?.createCursorKeys();
-    if (!cursors) {
-      throw new Error("Keyboard input not available");
-    }
+    if (!cursors) throw new Error("Keyboard input not available");
     this.cursors = cursors;
 
+    // Buat state touch
+    this.inputState = { left: false, right: false };
+
+    const width = Number(this.game.config.width);
+
     this.input.on("pointerdown", (pointer: Phaser.Input.Pointer) => {
-      const width = Number(this.game.config.width);
       if (pointer.x < width / 2) {
-        // Sentuhan di sisi kiri
-        this.moveLeft();
+        this.inputState.left = true;
       } else {
-        // Sentuhan di sisi kanan
-        this.moveRight();
+        this.inputState.right = true;
       }
+    });
+
+    this.input.on("pointerup", () => {
+      this.inputState.left = false;
+      this.inputState.right = false;
+    });
+
+    this.input.on("pointerout", () => {
+      this.inputState.left = false;
+      this.inputState.right = false;
     });
 
     this.timers.push(
@@ -269,22 +280,19 @@ export default class FallingSpritesGame extends Phaser.Scene {
   update() {
     const speed = 450;
 
+    // Keyboard
     if (this.cursors.left?.isDown) {
       this.catcher.setVelocityX(-speed);
     } else if (this.cursors.right?.isDown) {
       this.catcher.setVelocityX(speed);
+    }
+    // Touch
+    else if (this.inputState.left) {
+      this.catcher.setVelocityX(-speed);
+    } else if (this.inputState.right) {
+      this.catcher.setVelocityX(speed);
     } else {
       this.catcher.setVelocityX(0);
-    }
-
-    // membuat gerakan dengan touch
-    if (this.input.activePointer.isDown) {
-      const width = Number(this.game.config.width);
-      if (this.input.x < width / 2) {
-        this.moveLeft();
-      } else {
-        this.moveRight();
-      }
     }
 
     [
