@@ -4,7 +4,7 @@ import { useWalletStore } from "../../store/useWalletStore";
 import { Play } from "lucide-react";
 import { playBackgroundMusic } from "../Sound/sound";
 import { GameLayout } from "../../layout/GameLayout";
-import { submitScore } from "../../lib/scores";
+import { submitScore, submitScoreWithRelayer } from "../../lib/scores";
 
 import GameCanvas from "../Game/GameCanvas";
 import SoundModal from "../modals/SoundModal";
@@ -31,7 +31,7 @@ export function Dashboard() {
   const leaderboardRef = useRef<HTMLDivElement | null>(null);
 
   const handleStartGame = () => {
-    if (!walletAddress) {
+    if (!walletAddress || walletAddress === "world-app-user") {
       setShowForceConnectWalletModal(true);
       return;
     }
@@ -66,12 +66,21 @@ export function Dashboard() {
       console.error("No score to submit");
       return;
     }
-    try {
-      await submitScore(score);
-      console.log("✅ Score successfully submitted to contract");
-    } catch (err) {
-      setHighScoreNotPassedModal(true);
-      console.error("❌ Failed to submit score:", err);
+
+    if (walletProvider === "world") {
+      try {
+        await submitScoreWithRelayer(walletAddress!, score);
+        console.log("✅ Score successfully submitted to contract");
+      } catch (err) {
+        console.error("❌ Failed to submit score:", err);
+      }
+    } else {
+      try {
+        await submitScore(score);
+        console.log("✅ Score successfully submitted to contract");
+      } catch (err) {
+        console.error("❌ Failed to submit score:", err);
+      }
     }
   };
 

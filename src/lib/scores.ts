@@ -41,6 +41,7 @@ export async function getScoreByWallet(address: string) {
   }
 }
 
+// World app relayer functions
 export async function getScoreByWalletWithRelayer(address: string) {
   const response = await fetch(
     `${import.meta.env.VITE_BASE_URL}/api/score/${address}`
@@ -55,4 +56,25 @@ export async function getScoreByWalletWithRelayer(address: string) {
     lastUpdated: new Date(Number(data.lastUpdated) * 1000).toLocaleString(),
   };
   return responseData;
+}
+
+export async function submitScoreWithRelayer(player: string, score: number) {
+  const response = await fetch(
+    `${import.meta.env.VITE_BASE_URL}/api/score/submitFor`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ player, score }),
+    }
+  );
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error("Failed to submit score via relayer: " + errorData.message);
+  }
+
+  const data = await response.json();
+  return data;
 }
