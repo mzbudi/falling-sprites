@@ -13,8 +13,9 @@ export default function Leaderboard() {
     console.log(useWalletStore.getState(), " leaderboard wallet store");
 
     const fetchLeaderboard = async () => {
-      if (!address) {
+      if (!address || address === "world-app-user") {
         console.log("No address, skipping leaderboard fetch");
+        return;
       }
 
       try {
@@ -32,13 +33,14 @@ export default function Leaderboard() {
           }
           setLeaderboard(leaderboardData);
           return;
+        } else {
+          console.log("Using normal fetch...");
+          const leaderboardData: Leaderboard_Data[] = await getAllScores();
+          if (leaderboardData) {
+            console.log("Leaderboard data fetched:", leaderboardData);
+          }
+          setLeaderboard(leaderboardData);
         }
-        console.log("Using normal fetch...");
-        const leaderboardData: Leaderboard_Data[] = await getAllScores();
-        if (leaderboardData) {
-          console.log("Leaderboard data fetched:", leaderboardData);
-        }
-        setLeaderboard(leaderboardData);
       } catch (err) {
         console.error("Failed to fetch best score:", err);
       }
