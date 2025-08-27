@@ -13,10 +13,7 @@ export default function Leaderboard() {
     // console.log(useWalletStore.getState(), " leaderboard wallet store");
 
     const fetchLeaderboard = async () => {
-      if (!address || address === "world-app-user") {
-        console.log("No address, skipping leaderboard fetch");
-        return;
-      }
+      if (!address || address === "world-app-user") return;
 
       try {
         if (walletProvider === "world") {

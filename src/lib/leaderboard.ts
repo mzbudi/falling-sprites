@@ -56,7 +56,7 @@ export async function getAllScores() {
 
 export async function getAllScoresWithRelayer() {
   const response = await fetch(
-    `${import.meta.env.VITE_BASE_URL}/api/leaderboard/scores`
+    `${import.meta.env.VITE_BASE_URL}/api/leaderboard`
   );
   if (!response.ok) {
     throw new Error("Failed to fetch leaderboard from relayer");
