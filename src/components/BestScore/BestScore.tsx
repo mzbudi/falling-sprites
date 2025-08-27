@@ -6,6 +6,7 @@ export default function BestScore() {
   const address = useWalletStore((state) => state.walletAddress);
   const [bestScore, setBestScore] = useState<number | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const walletProvider = useWalletStore((state) => state.provider);
 
   useEffect(() => {
     const fetchBestScore = async () => {
@@ -30,7 +31,7 @@ export default function BestScore() {
     };
 
     fetchBestScore();
-  }, [address]);
+  }, [walletProvider, address]);
 
   return (
     <>

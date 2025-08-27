@@ -4,6 +4,7 @@ import {
   type User as MiniKitUser,
 } from "@worldcoin/minikit-js";
 import { useCallback, useState } from "react";
+import { useWalletStore } from "../../store/useWalletStore";
 
 const walletAuthInput = (nonce: string): WalletAuthInput => {
   return {
@@ -56,6 +57,10 @@ export const WorldConnect = () => {
       if (response.status === 200) {
         console.log("✅ Successfully signed in with World ID");
         console.log(finalPayload);
+
+        useWalletStore
+          .getState()
+          .setWalletInfo(finalPayload.address, null, null, "world");
 
         setUser(MiniKit.user);
       }

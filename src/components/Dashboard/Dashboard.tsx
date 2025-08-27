@@ -14,7 +14,7 @@ import BestScore from "../BestScore/BestScore";
 import Leaderboard from "../Leaderboard/Leaderboard";
 import HighScoreNotPassedModal from "../modals/HighScoreNotPassedModal";
 import ForceConnectWalletModal from "../modals/ForceConnectWalletModal";
-import { WorldConnect } from "../WorldConnect/WorldConnect";
+import { WorldConnect } from "../ConnectWallet/WorldConnect";
 
 export function Dashboard() {
   const [onGoing, setOnGoing] = useState(false);
