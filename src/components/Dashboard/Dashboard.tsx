@@ -76,8 +76,9 @@ export function Dashboard() {
         console.log("✅ Score successfully submitted to contract");
         setScoreSubmitSuccessModal(true);
       } catch (err) {
-        setSubmitScoreLoading(false);
         console.error("❌ Failed to submit score:", err);
+      } finally {
+        setSubmitScoreLoading(false);
       }
     } else {
       try {
@@ -87,6 +88,8 @@ export function Dashboard() {
       } catch (err) {
         setSubmitScoreLoading(false);
         console.error("❌ Failed to submit score:", err);
+      } finally {
+        setSubmitScoreLoading(false);
       }
     }
   };
