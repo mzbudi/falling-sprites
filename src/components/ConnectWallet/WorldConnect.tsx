@@ -76,7 +76,12 @@ export const WorldConnect = () => {
   return (
     <div className="flex flex-col items-center">
       {!user ? (
-        <button onClick={handleWalletAuth}>Wallet Auth</button>
+        <button
+          onClick={handleWalletAuth}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
+        >
+          Connect World App
+        </button>
       ) : (
         <button onClick={handleSignOut}>Sign Out</button>
       )}
