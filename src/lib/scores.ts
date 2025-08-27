@@ -55,6 +55,8 @@ export async function getScoreByWalletWithRelayer(address: string) {
     score: data.score,
     lastUpdated: new Date(data.lastUpdated).toLocaleString(),
   };
+  console.log(responseData, " getScoreByWalletWithRelayer");
+
   return responseData;
 }
 

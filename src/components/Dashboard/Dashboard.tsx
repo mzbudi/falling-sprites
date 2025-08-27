@@ -12,7 +12,7 @@ import ConnectWallet from "../ConnectWallet/ConnectWallet";
 import HowToPlayModal from "../modals/HowToPlayModal";
 import BestScore from "../BestScore/BestScore";
 import Leaderboard from "../Leaderboard/Leaderboard";
-import HighScoreNotPassedModal from "../modals/HighScoreNotPassedModal";
+import ScoreSubmitSuccessModal from "../modals/ScoreSubmitSuccessModal";
 import ForceConnectWalletModal from "../modals/ForceConnectWalletModal";
 import { WorldConnect } from "../ConnectWallet/WorldConnect";
 
@@ -20,7 +20,7 @@ export function Dashboard() {
   const [onGoing, setOnGoing] = useState(false);
   const [gameKey, setGameKey] = useState(0);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
-  const [highScoreNotPassedModal, setHighScoreNotPassedModal] = useState(false);
+  const [scoreSubmitSuccessModal, setScoreSubmitSuccessModal] = useState(false);
   const [showForceConnectWalletModal, setShowForceConnectWalletModal] =
     useState(false);
   const [submitScoreLoading, setSubmitScoreLoading] = useState(false);
@@ -74,18 +74,21 @@ export function Dashboard() {
       try {
         await submitScoreWithRelayer(walletAddress!, score);
         console.log("✅ Score successfully submitted to contract");
+        setScoreSubmitSuccessModal(true);
       } catch (err) {
+        setSubmitScoreLoading(false);
         console.error("❌ Failed to submit score:", err);
       }
     } else {
       try {
         await submitScore(score);
         console.log("✅ Score successfully submitted to contract");
+        setScoreSubmitSuccessModal(true);
       } catch (err) {
+        setSubmitScoreLoading(false);
         console.error("❌ Failed to submit score:", err);
       }
     }
-    setSubmitScoreLoading(false);
   };
 
   if (onGoing) {
@@ -93,8 +96,8 @@ export function Dashboard() {
       <GameLayout>
         <GameCanvas key={gameKey} />
 
-        {highScoreNotPassedModal && (
-          <HighScoreNotPassedModal onAccept={setHighScoreNotPassedModal} />
+        {scoreSubmitSuccessModal && (
+          <ScoreSubmitSuccessModal onAccept={setScoreSubmitSuccessModal} />
         )}
 
         {gameOverLoading && (

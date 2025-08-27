@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function HighScoreNotPassedModal({
+export default function ScoreSubmitSuccessModal({
   onAccept,
 }: {
   onAccept: (param: boolean) => void;
@@ -25,10 +25,10 @@ export default function HighScoreNotPassedModal({
         }}
       >
         <h2 className="text-3xl font-bold italic text-black mb-4 tracking-widest">
-          🎮 Oh No!
+          🎮 Score Submited!
         </h2>
         <ul className="text-gray-800 text-left text-lg italic font-medium space-y-3 mb-6">
-          Your high score is not beaten yet. Please try again!
+          <li>• Your score has been submitted successfully.</li>
         </ul>
         <button
           onClick={() => handleClick()}
