@@ -19,7 +19,7 @@ export const WorldConnect = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Ambil actions/state dari zustand
-  const { walletAddress, setWalletInfo, resetWallet } = useWalletStore();
+  const { walletAddress, setWalletInfo } = useWalletStore();
 
   const handleWalletAuth = async () => {
     if (!MiniKit.isInstalled()) {
@@ -81,8 +81,10 @@ export const WorldConnect = () => {
 
   const handleSignOut = useCallback(() => {
     // reset persisted state
-    resetWallet();
-  }, [resetWallet]);
+    useWalletStore
+      .getState()
+      .setWalletInfo("world-app-user", null, null, "world");
+  }, []);
 
   useEffect(() => {
     // Run once on mount only.

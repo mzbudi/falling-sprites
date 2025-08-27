@@ -28,13 +28,11 @@ export default function BestScore() {
               scoreData.lastUpdated
             );
           }
-          return;
         } else {
           const scoreData = await getScoreByWallet(address);
           if (scoreData) {
             setBestScore(scoreData.score);
             setLastUpdated(scoreData.lastUpdated);
-
             console.log(
               "Best score fetched:",
               scoreData.score,
@@ -43,8 +41,6 @@ export default function BestScore() {
             );
           }
         }
-
-        fetchBestScore();
       } catch (err) {
         console.error("Failed to fetch best score:", err);
       }
