@@ -13,6 +13,8 @@ export default class FallingSpritesGame extends Phaser.Scene {
   private timeLeft: number = 60;
   private timerText!: Phaser.GameObjects.Text;
   private timers: Phaser.Time.TimerEvent[] = [];
+  private collectSound!: Phaser.Sound.BaseSound;
+  private wrongSound!: Phaser.Sound.BaseSound;
 
   private coinDelay: number = 1000;
   private sprite1Delay: number = 2000;
@@ -38,6 +40,10 @@ export default class FallingSpritesGame extends Phaser.Scene {
   }
 
   create() {
+    // sound effects
+    this.collectSound = this.sound.add("collect-sound");
+    this.wrongSound = this.sound.add("wrong-sound", { volume: 0.3 });
+
     // Background
     const image = this.add.image(0, 0, "background").setOrigin(0.5, 0.5);
 
@@ -319,9 +325,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
             // score minus effect
             const penalty = -2;
 
-            const wrongSound = this.sound.add("wrong-sound");
-            wrongSound.setVolume(0.2);
-            wrongSound.play();
+            this.wrongSound.play();
 
             const pointText = this.add
               .text(sprite.x, sprite.y, `${penalty}`, {
@@ -485,9 +489,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
     _catcher: Phaser.Physics.Arcade.Sprite,
     coin: Phaser.Physics.Arcade.Sprite
   ) {
-    const collectSound = this.sound.add("collect-sound");
-    collectSound.play();
-
+    this.collectSound.play();
     // Tampilkan teks poin di posisi coin
     const points = 5; // Poin yang didapatkan dari coin
     const pointText = this.add
@@ -520,8 +522,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
     _catcher: Phaser.Physics.Arcade.Sprite,
     falling_sprites_1: Phaser.Physics.Arcade.Sprite
   ) {
-    const collectSound = this.sound.add("collect-sound");
-    collectSound.play();
+    this.collectSound.play();
 
     // Sprite 1 Catcher
     const points = 5; // Score gotten from sprite 1
@@ -555,8 +556,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
     _catcher: Phaser.Physics.Arcade.Sprite,
     falling_sprite_2: Phaser.Physics.Arcade.Sprite
   ) {
-    const collectSound = this.sound.add("collect-sound");
-    collectSound.play();
+    this.collectSound.play();
 
     // Tampilkan teks poin di posisi coin
     const points = 4; // Poin yang didapatkan dari coin
@@ -590,8 +590,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
     _catcher: Phaser.Physics.Arcade.Sprite,
     falling_sprite_3: Phaser.Physics.Arcade.Sprite
   ) {
-    const collectSound = this.sound.add("collect-sound");
-    collectSound.play();
+    this.collectSound.play();
 
     // Tampilkan teks poin di posisi coin
     const points = 3; // Poin yang didapatkan dari coin
@@ -625,9 +624,7 @@ export default class FallingSpritesGame extends Phaser.Scene {
     _catcher: Phaser.Physics.Arcade.Sprite,
     meteor: Phaser.Physics.Arcade.Sprite
   ) {
-    const wrongSound = this.sound.add("wrong-sound");
-    wrongSound.setVolume(0.2);
-    wrongSound.play();
+    this.wrongSound.play();
 
     const points = -20;
     const pointText = this.add
