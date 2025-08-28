@@ -97,6 +97,9 @@ export default class FallingSpritesGame extends Phaser.Scene {
     this.meteor = this.physics.add.group();
 
     // Keyboard control
+
+    this.input.addPointer(2);
+
     const cursors = this.input.keyboard?.createCursorKeys();
     if (!cursors) {
       throw new Error("Keyboard input not available");
@@ -278,13 +281,28 @@ export default class FallingSpritesGame extends Phaser.Scene {
     }
 
     // membuat gerakan dengan touch
-    if (this.input.activePointer.isDown) {
-      const width = Number(this.game.config.width);
-      if (this.input.x < width / 2) {
-        this.moveLeft();
-      } else {
-        this.moveRight();
+    let movingLeft = false;
+    let movingRight = false;
+
+    const width = Number(this.game.config.width);
+    const pointers = [this.input.pointer1, this.input.pointer2]; // bisa ditambah kalau perlu
+
+    pointers.forEach((p) => {
+      if (p && p.isDown) {
+        if (p.x < width / 2) {
+          movingLeft = true;
+        } else {
+          movingRight = true;
+        }
       }
+    });
+
+    if (movingLeft && !movingRight) {
+      this.moveLeft();
+    } else if (movingRight && !movingLeft) {
+      this.moveRight();
+    } else if (!this.cursors.left?.isDown && !this.cursors.right?.isDown) {
+      this.catcher.setVelocityX(0);
     }
 
     [
