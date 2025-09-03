@@ -19,7 +19,8 @@ export const WorldConnect = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   // Ambil actions/state dari zustand
-  const { walletAddress, setWalletInfo } = useWalletStore();
+  const { walletAddress, setWalletInfo, username, setUsername } =
+    useWalletStore();
 
   const handleWalletAuth = async () => {
     if (!MiniKit.isInstalled()) {
@@ -67,11 +68,13 @@ export const WorldConnect = () => {
 
       if (response.ok) {
         console.log("✅ Successfully signed in with World ID");
-        console.log("finalPayload:", finalPayload);
-        console.log("username:", await MiniKit.getUserByAddress(finalPayload.address));
-        
+        const usernameFetch = await (
+          await MiniKit.getUserByAddress(finalPayload.address)
+        ).username;
+
         // Simpan ke zustand via action (pakai action dari hook)
         setWalletInfo(finalPayload.address, null, null, "world");
+        setUsername(usernameFetch!);
       } else {
         console.error("complete-siwe failed:", await response.text());
       }
@@ -87,6 +90,7 @@ export const WorldConnect = () => {
     useWalletStore
       .getState()
       .setWalletInfo("world-app-user", null, null, "world");
+    useWalletStore.getState().setUsername(null);
   }, []);
 
   useEffect(() => {
@@ -118,12 +122,16 @@ export const WorldConnect = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const shortAddr = (a?: string | null) =>
-    a ? `${a.slice(0, 6)}...${a.slice(-4)}` : "";
+  // const shortAddr = (a?: string | null) =>
+  //   a ? `${a.slice(0, 6)}...${a.slice(-4)}` : "";
+
+  // const username = async (walletAddress: string) => {
+  //   return (await MiniKit.getUserByAddress(walletAddress)).username;
+  // };
 
   return (
     <div className="flex flex-col items-center">
-      {!walletAddress || walletAddress === 'world-app-user' ? (
+      {!walletAddress || walletAddress === "world-app-user" ? (
         <button
           onClick={handleWalletAuth}
           disabled={isLoading}
@@ -137,7 +145,11 @@ export const WorldConnect = () => {
         </button>
       ) : (
         <button onClick={handleSignOut} className="px-3 py-1 rounded-md border">
-          Sign Out ({shortAddr(walletAddress)})
+          Sign Out (
+          {username
+            ? `@${username}`
+            : `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`}
+          )
         </button>
       )}
     </div>
