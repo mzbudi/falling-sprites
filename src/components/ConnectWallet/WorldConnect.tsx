@@ -68,6 +68,7 @@ export const WorldConnect = () => {
       if (response.ok) {
         console.log("✅ Successfully signed in with World ID");
         console.log("finalPayload:", finalPayload);
+        console.log("username:", MiniKit.getUserByAddress(finalPayload.address));
         
         // Simpan ke zustand via action (pakai action dari hook)
         setWalletInfo(finalPayload.address, null, null, "world");
