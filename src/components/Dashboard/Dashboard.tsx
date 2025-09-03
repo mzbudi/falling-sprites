@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { useGameStore } from "../../store/useGameStore";
 import { useWalletStore } from "../../store/useWalletStore";
 import { Play } from "lucide-react";
-import { playBackgroundMusic } from "../Sound/sound";
+import { playBackgroundMusic, stopBackgroundMusic } from "../Sound/sound";
 import { GameLayout } from "../../layout/GameLayout";
 import { submitScore, submitScoreWithRelayer } from "../../lib/scores";
 
@@ -15,6 +15,7 @@ import Leaderboard from "../Leaderboard/Leaderboard";
 import ScoreSubmitSuccessModal from "../modals/ScoreSubmitSuccessModal";
 import ForceConnectWalletModal from "../modals/ForceConnectWalletModal";
 import { WorldConnect } from "../ConnectWallet/WorldConnect";
+import { Volume2, VolumeOff } from "lucide-react";
 
 export function Dashboard() {
   const [onGoing, setOnGoing] = useState(false);
@@ -29,6 +30,7 @@ export function Dashboard() {
   const bgmState = useGameStore((state) => state.bgmState);
   const walletAddress = useWalletStore((state) => state.walletAddress);
   const walletProvider = useWalletStore((state) => state.provider);
+  const muted = useGameStore((state) => state.muted);
   const leaderboardRef = useRef<HTMLDivElement | null>(null);
 
   const handleStartGame = () => {
@@ -156,7 +158,7 @@ export function Dashboard() {
             >
               {submitScoreLoading ? (
                 <>
-                  Submitting to Blockchain {" "}
+                  Submitting to Blockchain{" "}
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                 </>
               ) : (
@@ -195,12 +197,35 @@ export function Dashboard() {
       <div className="min-h-screen flex flex-col items-center justify-center text-white px-4">
         <div className="absolute top-4 left-0 right-0 px-4 z-50 flex flex-col items-center gap-2 sm:block">
           {/* Mobile layout (flex-col) */}
-          <div className="flex flex-col items-center gap-2 sm:hidden">
+          <div className="flex flex-col sm:hidden justify-center items-center w-full mb-2">
             {/* if provider wallet connect render worldconnect, else render wallet connect */}
 
-            {walletProvider === "world"
-              ? bgmState && <WorldConnect />
-              : bgmState && <ConnectWallet />}
+            <div className="flex flex-row justify-center mb-2">
+              {muted ? (
+                <button
+                  onClick={() => {
+                    useGameStore.getState().setMuted(false);
+                    playBackgroundMusic();
+                  }}
+                  className="p-2 rounded-full bg-gray-700 bg-opacity-50 hover:bg-opacity-75 transition mr-2"
+                >
+                  <VolumeOff className="h-6 w-6 text-white" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    useGameStore.getState().setMuted(true);
+                    stopBackgroundMusic();
+                  }}
+                  className="p-2 rounded-full bg-gray-700 bg-opacity-50 hover:bg-opacity-75 transition mr-2"
+                >
+                  <Volume2 className="h-6 w-6 text-white" />
+                </button>
+              )}
+              {walletProvider === "world"
+                ? bgmState && <WorldConnect />
+                : bgmState && <ConnectWallet />}
+            </div>
             <BestScore />
           </div>
 
@@ -210,6 +235,27 @@ export function Dashboard() {
               <BestScore />
             </div>
             <div className="flex justify-end">
+              {muted ? (
+                <button
+                  onClick={() => {
+                    useGameStore.getState().setMuted(false);
+                    playBackgroundMusic();
+                  }}
+                  className="p-2 rounded-full bg-gray-700 bg-opacity-50 hover:bg-opacity-75 transition mr-2"
+                >
+                  <VolumeOff className="h-6 w-6 text-white" />
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    useGameStore.getState().setMuted(true);
+                    stopBackgroundMusic();
+                  }}
+                  className="p-2 rounded-full bg-gray-700 bg-opacity-50 hover:bg-opacity-75 transition mr-2"
+                >
+                  <Volume2 className="h-6 w-6 text-white" />
+                </button>
+              )}
               {bgmState && <ConnectWallet />}
             </div>
           </div>
